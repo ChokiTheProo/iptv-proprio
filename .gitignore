@@ -8,3 +8,9 @@ Thumbs.db
 .env.local
 .vercel
 deploy.zip
+
+player/playlists/index.m3u
+player/playlists/index-online.m3u
+player/playlists/index-test.json
+foto_thumb.jpg
+tmp_check.js
