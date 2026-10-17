@@ -1,0 +1,23 @@
+{
+  "name": "iptv-proprio",
+  "version": "1.0.0",
+  "description": "IPTV proprio gratuito e legal + REA para engenharia reversa",
+  "type": "module",
+  "scripts": {
+    "rea:doctor": "rea doctor",
+    "rea:help": "rea --help",
+    "rea:capabilities": "rea capabilities",
+    "rea:analyze": "rea analyze-javascript-application ./player --json",
+    "iptv": "serve player -l 8080 -s",
+    "iptv:fetch": "node scripts/fetch-playlist.mjs br",
+    "test:channels": "node scripts/test-channels.mjs br",
+    "test:filmes": "node scripts/test-channels.mjs filmes",
+    "filmes": "node scripts/build-filmes.mjs",
+    "dev": "serve player -l 8080 -s"
+  },
+  "dependencies": {
+    "rea-agents": "^6.5.0",
+    "serve": "^14.2.6",
+    "vercel": "^64.5.0"
+  }
+}

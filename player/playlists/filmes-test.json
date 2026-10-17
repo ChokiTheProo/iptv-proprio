@@ -1,0 +1,77 @@
+{
+  "testedAt": "2026-10-17T15:03:57.890Z",
+  "total": 7,
+  "online": 1,
+  "results": [
+    {
+      "url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "name": "Big Buck Bunny (2008) - Blender",
+      "group": "Filmes;Animação",
+      "ok": true,
+      "status": 200,
+      "ms": 435,
+      "ct": "audio/mpegurl",
+      "hint": ""
+    },
+    {
+      "url": "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+      "name": "Sintel (2010) - Blender",
+      "group": "Filmes;Fantasia",
+      "ok": false,
+      "status": 403,
+      "ms": 503,
+      "ct": "text/html",
+      "hint": ""
+    },
+    {
+      "url": "https://test-streams.mux.dev/tos-iptv.m3u8",
+      "name": "Tears of Steel (2012) - Blender (Sci-Fi)",
+      "group": "Filmes;Sci-Fi",
+      "ok": false,
+      "status": 404,
+      "ms": 931,
+      "ct": "application/xml; charset=UTF-8",
+      "hint": ""
+    },
+    {
+      "url": "https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4",
+      "name": "Night of the Living Dead (1968) - Domínio Público",
+      "group": "Filmes;Terror;Clássico",
+      "ok": false,
+      "status": 404,
+      "ms": 1838,
+      "ct": "text/html; charset=UTF-8",
+      "hint": ""
+    },
+    {
+      "url": "https://archive.org/download/Charade_1963/Charade_1963_512kb.mp4",
+      "name": "Charade (1963) - Domínio Público",
+      "group": "Filmes;Comédia;Clássico",
+      "ok": false,
+      "status": 404,
+      "ms": 1810,
+      "ct": "text/html; charset=UTF-8",
+      "hint": ""
+    },
+    {
+      "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f1213aa91a87d00074c8c4c/master.m3u8?deviceType=samsung-tvplus&deviceMake=samsung&deviceModel=samsung&deviceVersion=unknown&appVersion=unknown&deviceLat=0&deviceLon=0&deviceDNT=%7BtargetOptOut%7D&deviceId=%7BdeviceId%7D&advertisingId=%7BdeviceId%7D&embedPartner=samsung-tvplus&appName=samsung-tvplus&appVersion=unknown&rawDeviceDNT=0&deviceId=aaa&advertisingId=aaa&embedPartner=samsung-tvplus",
+      "name": "Pluto TV Cine Sucessos (FAST)",
+      "group": "Filmes;FAST",
+      "ok": false,
+      "status": 400,
+      "ms": 839,
+      "ct": "text/html; charset=utf-8",
+      "hint": ""
+    },
+    {
+      "url": "https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f121175aa8855000724b270/master.m3u8?deviceType=samsung-tvplus&deviceMake=samsung&deviceModel=samsung&deviceVersion=unknown&appVersion=unknown&deviceLat=0&deviceLon=0&deviceDNT=%7BtargetOptOut%7D&deviceId=%7BdeviceId%7D&advertisingId=%7BdeviceId%7D&embedPartner=samsung-tvplus&appName=samsung-tvplus&appVersion=unknown&rawDeviceDNT=0&deviceId=aaa&advertisingId=aaa&embedPartner=samsung-tvplus",
+      "name": "Pluto TV Cine Comédia (FAST)",
+      "group": "Filmes;Comédia;FAST",
+      "ok": false,
+      "status": 400,
+      "ms": 847,
+      "ct": "text/html; charset=utf-8",
+      "hint": ""
+    }
+  ]
+}

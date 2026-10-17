@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IPTV Próprio - Gratuito e Legal</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0f1420" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<style>
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#0b0e14;color:#e6e8ec}
+  header{padding:16px 20px;border-bottom:1px solid #1f2430;display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:#0f1420;position:sticky;top:0;z-index:10}
+  h1{margin:0;font-size:18px} .badge{font-size:12px;background:#1a7f37;color:#fff;padding:2px 8px;border-radius:999px}
+  main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:16px;min-height:calc(100vh - 72px)}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
+  .panel{background:#111827;border:1px solid #1f2430;border-radius:14px;overflow:hidden}
+  .panel h2{margin:0;padding:12px 14px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#9aa3b2;border-bottom:1px solid #1f2430}
+  #search{width:100%;padding:10px 12px;background:#0b0e14;border:1px solid #1f2430;border-radius:10px;color:#e6e8ec;outline:none}
+  #list{max-height:60vh;overflow:auto}
+  .ch{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid #151a27;cursor:pointer}
+  .ch:hover{background:#151c2e} .ch.active{background:#1b2440}
+  .ch img{width:36px;height:36px;object-fit:contain;background:#0b0e14;border-radius:8px;border:1px solid #1f2430}
+  .ch .t{font-size:13px;line-height:1.2} .ch .s{font-size:11px;color:#9aa3b2}
+  video{width:100%;height:100%;background:#000}
+  .videoWrap{aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+  .meta{padding:12px 14px;font-size:13px;color:#cbd5e1;border-top:1px solid #1f2430}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{padding:8px 10px;border-radius:10px;border:1px solid #1f2430;background:#0b0e14;color:#e6e8ec;cursor:pointer;font-size:12px}
+  .btn:hover{background:#151c2e} input[type=url]{flex:1;min-width:220px}
+  .hint{font-size:12px;color:#9aa3b2}
+  a{color:#7cc4ff}
+  /* TV remote focus */
+  .ch:focus{outline:2px solid #7cc4ff; background:#1b2440}
+  @media (pointer:coarse){ .ch{padding:14px 12px} .btn{padding:12px 14px; font-size:14px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>📺 IPTV Próprio</h1>
+  <span class="badge">100% gratuito & legal</span>
+  <span class="hint">Use apenas canais Free-To-Air / públicos • Fonte: <a href="https://github.com/iptv-org/iptv" target="_blank">iptv-org/iptv</a></span>
+</header>
+<main>
+  <div class="panel">
+    <h2>Canais</h2>
+    <div style="padding:12px;display:grid;gap:10px">
+      <input id="search" placeholder="Buscar canal, país, categoria..." />
+      <div class="row">
+        <button class="btn" id="btnLoad">📥 Carregar playlist Brasil</button>
+        <button class="btn" id="btnDemo">▶️ Demo HLS</button>
+      </div>
+      <div class="row">
+        <input id="customUrl" type="url" placeholder="Cole URL .m3u / .m3u8 aqui" />
+        <button class="btn" id="btnCustom">Carregar URL</button>
+      </div>
+      <div class="row">
+        <label class="btn" style="cursor:pointer">📂 Abrir .m3u local <input id="file" type="file" accept=".m3u,.m3u8" hidden /></label>
+        <span id="count" class="hint"></span>
+      </div>
+      <div class="row">
+        <button class="btn" data-cat="">Todos</button>
+        <button class="btn" data-cat="Movies">🎬 Filmes</button>
+        <button class="btn" data-cat="Series">📺 Séries</button>
+        <button class="btn" data-cat="Filmes">🍿 Filmes (curadoria)</button>
+        <button class="btn" id="btnOnline">✅ Só testados</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnBrOnline">🇧🇷 BR 279 online (70%)</button>
+        <button class="btn" id="btnFilmes">🍿 Filmes.m3u</button>
+        <button class="btn" id="btnTest">🧪 Testar canais</button>
+      </div>
+      <div id="list"></div>
+      <p class="hint">Dica: este player roda 100% no navegador (hls.js). Alguns streams bloqueiam CORS — se não tocar, abra a URL direta no VLC.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="display:flex;flex-direction:column">
+    <h2>Player</h2>
+    <div class="videoWrap"><video id="video" controls playsinline></video></div>
+    <div class="meta">
+      <div id="now" style="font-weight:600">Selecione um canal</div>
+      <div id="nowUrl" class="hint" style="word-break:break-all"></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="btnVlc">Abrir no VLC</button>
+        <button class="btn" id="btnCopy">Copiar URL</button>
+        <span id="status" class="hint"></span>
+      </div>
+    </div>
+    <div style="padding:12px" class="hint">
+      <b>Como ter seu IPTV gratuito:</b> 1) Clique em "Carregar playlist Brasil" (baixa lista pública iptv-org), 2) busque e clique no canal, 3) salve seus favoritos exportando o .m3u em <code>player/playlists/</code>.<br/>
+      <b>REA:</b> para engenharia reversa de um app que VOCÊ possui (ex: APK), use <code>rea inspect-android-package</code> ou <code>rea analyze-javascript-application</code> e veja o README.
+    </div>
+  </div>
+</main>
+
+<script type="module">
+const $ = s => document.querySelector(s);
+const video = $('#video'), listEl = $('#list'), searchEl = $('#search'), countEl = $('#count');
+const nowEl = $('#now'), nowUrlEl = $('#nowUrl'), statusEl = $('#status');
+let channels = [];
+let hls = null;
+
+function parseM3U(text){
+  const lines = text.split(/\r?\n/);
+  const out = [];
+  let cur = null;
+  for(let i=0;i<lines.length;i++){
+    const l = lines[i].trim();
+    if(!l) continue;
+    if(l.startsWith('#EXTINF')){
+      // #EXTINF:-1 tvg-logo="..." group-title="..." ,Nome
+      const logo = (l.match(/tvg-logo="([^"]*)"/)||[])[1]||"";
+      const group = (l.match(/group-title="([^"]*)"/)||[])[1]||"";
+      const name = l.split(',').slice(1).join(',').trim() || 'Sem nome';
+      cur = {name, logo, group, url:''};
+    } else if(l.startsWith('#')) {
+      continue;
+    } else if(l.startsWith('http')){
+      if(cur){ cur.url = l; out.push(cur); cur=null; }
+      else { out.push({name:l, logo:'', group:'', url:l}); }
+    }
+  }
+  return out;
+}
+
+let catFilter='';
+function render(filter=''){
+  const q = filter.toLowerCase();
+  let filtered = channels;
+  if(q) filtered = filtered.filter(c =>
+    c.name.toLowerCase().includes(q) || c.group.toLowerCase().includes(q) || c.url.toLowerCase().includes(q)
+  );
+  if(catFilter) filtered = filtered.filter(c => c.group.toLowerCase().includes(catFilter.toLowerCase()));
+  countEl.textContent = `${filtered.length} canais`;
+  listEl.innerHTML = filtered.slice(0,800).map((c,i)=>`
+    <div class="ch" data-idx="${channels.indexOf(c)}">
+      <img src="${c.logo||''}" onerror="this.style.visibility='hidden'" alt="" />
+      <div><div class="t">${esc(c.name)}</div><div class="s">${esc(c.group||'')} • ${esc(host(c.url))}</div></div>
+    </div>
+  `).join('') || '<div class="hint" style="padding:8px">Nenhum canal. Carregue uma playlist.</div>';
+  listEl.querySelectorAll('.ch').forEach(el=>{
+    el.addEventListener('click',()=> play(parseInt(el.dataset.idx)));
+  });
+}
+function esc(s){return s.replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function host(u){try{return new URL(u).hostname}catch{return ''}}
+
+function play(idx){
+  const c = channels[idx];
+  if(!c) return;
+  nowEl.textContent = c.name;
+  nowUrlEl.textContent = c.url;
+  statusEl.textContent = 'Carregando...';
+  [...listEl.children].forEach(el=>el.classList.toggle('active', parseInt(el.dataset.idx)===idx));
+
+  if(hls){ hls.destroy(); hls=null; }
+  if(Hls.isSupported() && c.url.endsWith('.m3u8') || c.url.includes('.m3u8')){
+    hls = new Hls({enableWorker:true});
+    hls.loadSource(c.url);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=> { video.play().catch(()=>{}); statusEl.textContent='Tocando (hls.js)'; });
+    hls.on(Hls.Events.ERROR, (e,d)=> { console.warn(d); statusEl.textContent = 'Erro HLS: '+(d.details||d.type); });
+  } else {
+    video.src = c.url;
+    video.play().then(()=> statusEl.textContent='Tocando').catch(e=> statusEl.textContent='Erro: '+e.message);
+  }
+}
+
+// Demo público (Big Buck Bunny - Blender)
+const DEMO = [
+  {name:'Demo - Big Buck Bunny (HLS)', logo:'', group:'Demo', url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'},
+  {name:'Demo - Sintel (HLS)', logo:'', group:'Demo', url:'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'},
+];
+
+async function loadBrazil(){
+  statusEl.textContent='Baixando playlist iptv-org (Brasil)...';
+  // iptv-org usa jsDelivr / GitHub - pode dar CORS, tentamos proxies de fallback
+  const urls = [
+    'https://iptv-org.github.io/iptv/countries/br.m3u',
+    'https://raw.githubusercontent.com/iptv-org/iptv/gh-pages/countries/br.m3u',
+  ];
+  for(const u of urls){
+    try{
+      const r = await fetch(u);
+      if(!r.ok) throw new Error(r.status);
+      const t = await r.text();
+      channels = parseM3U(t);
+      render(searchEl.value);
+      statusEl.textContent = `Carregado ${channels.length} canais do Brasil`;
+      if(channels.length) play(0);
+      return;
+    }catch(e){ console.warn('fail',u,e); }
+  }
+  statusEl.textContent='Falha por CORS. Use o botão "Abrir .m3u local" ou cole URL direta.';
+  // fallback demo
+  channels = DEMO;
+  render();
+}
+
+$('#btnLoad').addEventListener('click', loadBrazil);
+$('#btnDemo').addEventListener('click', ()=>{ channels=DEMO; render(); play(0); });
+$('#btnCustom').addEventListener('click', async ()=>{
+  const u = $('#customUrl').value.trim();
+  if(!u) return;
+  if(u.endsWith('.m3u')||u.endsWith('.m3u8')){
+    try{
+      const r = await fetch(u); const t=await r.text();
+      if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); if(channels.length) play(0); return; }
+    }catch{}
+  }
+  channels=[{name:u, logo:'', group:'Custom', url:u}];
+  render(); play(0);
+});
+$('#file').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const t=await f.text(); channels=parseM3U(t); render(); if(channels.length) play(0);
+});
+searchEl.addEventListener('input', ()=> render(searchEl.value));
+$('#btnCopy').addEventListener('click', ()=> navigator.clipboard.writeText(nowUrlEl.textContent||''));
+$('#btnVlc').addEventListener('click', ()=>{
+  const u=nowUrlEl.textContent; if(!u) return;
+  statusEl.textContent='Cole no VLC: Mídia > Abrir fluxo de rede > '+u;
+});
+document.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>{
+  catFilter=b.dataset.cat; document.querySelectorAll('[data-cat]').forEach(x=>x.style.background='');
+  b.style.background='#1b2440'; render(searchEl.value);
+}));
+$('#btnOnline').addEventListener('click', async()=>{
+  try{ const t=await fetch('playlists/br-online.m3u').then(r=>r.text()); channels=parseM3U(t); catFilter=''; render(); statusEl.textContent=`${channels.length} canais testados (online)`; if(channels.length) play(0);}catch{ statusEl.textContent='br-online.m3u não encontrado - rode npm run test:channels';}
+});
+$('#btnBrOnline').addEventListener('click', ()=> $('#btnOnline').click());
+$('#btnFilmes').addEventListener('click', async()=>{
+  try{ const t=await fetch('playlists/filmes.m3u').then(r=>r.text()); channels=parseM3U(t); render(); statusEl.textContent=`${channels.length} filmes curadoria`; if(channels.length) play(0);}catch{ statusEl.textContent='filmes.m3u não encontrado';}
+});
+$('#btnTest').addEventListener('click', async()=>{
+  statusEl.textContent='Testando canais... veja console (F12)';
+  const ok=[];
+  for(const c of channels.slice(0,30)){
+    try{ const r=await fetch(c.url,{method:'HEAD',mode:'no-cors'}); ok.push(c.name);}catch{}
+  }
+  statusEl.textContent=`Teste rápido: verifique br-test.json para resultado completo (node scripts/test-channels.mjs)`;
+});
+
+// PWA + TV remote
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
+// Controle remoto TV: setas + OK/Enter, Voltar
+document.addEventListener('keydown', e=>{
+  const focusable = [...document.querySelectorAll('.ch, .btn, input')];
+  const idx = focusable.indexOf(document.activeElement);
+  if(e.key==='ArrowDown'){ e.preventDefault(); (focusable[idx+1]||focusable[0])?.focus(); }
+  if(e.key==='ArrowUp'){ e.preventDefault(); (focusable[idx-1]||focusable[focusable.length-1])?.focus(); }
+  if(e.key==='Enter'){ if(document.activeElement?.classList.contains('ch')) document.activeElement.click(); }
+});
+// tornar canais focáveis
+const origRender = render;
+render = function(...a){ origRender(...a); document.querySelectorAll('.ch').forEach(el=>el.setAttribute('tabindex','0')); };
+
+// inicial + tenta auto-carregar br.m3u local se existir
+channels=DEMO; render();
+fetch('playlists/br.m3u').then(r=>r.ok?r.text():Promise.reject()).then(t=>{
+  if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`${channels.length} canais (br.m3u local)`; }
+}).catch(()=>{});
+</script>
+</body>
+</html>

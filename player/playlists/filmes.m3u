@@ -1,0 +1,15 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="big-buck-bunny-2008-blender" tvg-logo="https://peach.blender.org/wp-content/uploads/bunny_poster.jpg" group-title="Filmes;Animação",Big Buck Bunny (2008) - Blender
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="sintel-2010-blender" tvg-logo="https://durian.blender.org/wp-content/uploads/2010/05/sintel_poster.jpg" group-title="Filmes;Fantasia",Sintel (2010) - Blender
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="elephants-dream-2006-blender-sci-fi-" tvg-logo="https://orange.blender.org/wp-content/themes/orange/images/common/ed_header.jpg" group-title="Filmes;Sci-Fi",Elephants Dream (2006) - Blender (Sci-Fi)
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="night-of-the-living-dead-1968-dom-nio-p-" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Night_of_the_Living_Dead_%281968%29_-_title_card.jpg/640px-Night_of_the_Living_Dead_%281968%29_-_title_card.jpg" group-title="Filmes;Terror;Clássico",Night of the Living Dead (1968) - Domínio Público
+https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4
+#EXTINF:-1 tvg-id="charade-1963-dom-nio-p-blico" group-title="Filmes;Comédia;Clássico",Charade (1963) - Domínio Público
+https://archive.org/download/Charade_1963/Charade_1963_512kb.mp4
+#EXTINF:-1 tvg-id="pluto-tv-cine-sucessos-fast-" tvg-logo="https://images.pluto.tv/channels/5f1213aa91a87d00074c8c4c/colorLogoPNG.png" group-title="Filmes;FAST",Pluto TV Cine Sucessos (FAST)
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f1213aa91a87d00074c8c4c/master.m3u8?deviceType=samsung-tvplus&deviceMake=samsung&deviceModel=samsung&deviceVersion=unknown&appVersion=unknown&deviceLat=0&deviceLon=0&deviceDNT=%7BtargetOptOut%7D&deviceId=%7BdeviceId%7D&advertisingId=%7BdeviceId%7D&embedPartner=samsung-tvplus&appName=samsung-tvplus&appVersion=unknown&rawDeviceDNT=0&deviceId=aaa&advertisingId=aaa&embedPartner=samsung-tvplus
+#EXTINF:-1 tvg-id="pluto-tv-cine-com-dia-fast-" group-title="Filmes;Comédia;FAST",Pluto TV Cine Comédia (FAST)
+https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/5f121175aa8855000724b270/master.m3u8?deviceType=samsung-tvplus&deviceMake=samsung&deviceModel=samsung&deviceVersion=unknown&appVersion=unknown&deviceLat=0&deviceLon=0&deviceDNT=%7BtargetOptOut%7D&deviceId=%7BdeviceId%7D&advertisingId=%7BdeviceId%7D&embedPartner=samsung-tvplus&appName=samsung-tvplus&appVersion=unknown&rawDeviceDNT=0&deviceId=aaa&advertisingId=aaa&embedPartner=samsung-tvplus
