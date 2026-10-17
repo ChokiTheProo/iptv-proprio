@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
@@ -47,8 +47,8 @@
   .chipRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0 14px}
   .chip{padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:#d6dbe6;cursor:pointer;font-size:13px;font-weight:600}
   .chip.active{background:#fff;color:#0b0e14;border-color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.3)}
-  .chip--premier.active{background:linear-gradient(180deg,#ffd54a,#f5c518);color:#111;border-color:#e8b800;box-shadow:0 8px 20px rgba(245,197,24,.35)}
-  .chip--premier{border-color:rgba(245,197,24,.45);color:var(--gold)}
+  .chip--premiere.active{background:linear-gradient(180deg,#ffd54a,#f5c518);color:#111;border-color:#e8b800;box-shadow:0 8px 20px rgba(245,197,24,.35)}
+  .chip--premiere{border-color:rgba(245,197,24,.45);color:var(--gold)}
   /* PLAYER */
   .playerSection{display:grid;grid-template-columns: 1.35fr .85fr;gap:18px;align-items:start}
   @media(max-width:980px){.playerSection{grid-template-columns:1fr}}
@@ -71,8 +71,8 @@
   .ch{position:relative;display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;background:linear-gradient(180deg, #1a1e2e, #13151f);border:1px solid var(--line);cursor:pointer;transition:.18s;min-height:150px}
   .ch:hover{transform:translateY(-2px);border-color:rgba(124,108,255,.45);box-shadow:0 12px 30px rgba(0,0,0,.4)}
   .ch.active{outline:2px solid var(--gold);background:linear-gradient(180deg,#232a45,#1a1e2e);box-shadow:0 12px 30px rgba(245,197,24,.18)}
-  .ch--premier{border-color:rgba(245,197,24,.35)}
-  .ch--premier::before{content:"PREMIER";position:absolute;top:8px;right:8px;font-size:9px;letter-spacing:.1em;font-weight:800;background:linear-gradient(180deg,#ffd54a,#f5c518);color:#111;padding:4px 7px;border-radius:999px;box-shadow:0 6px 16px rgba(245,197,24,.35)}
+  .ch--premiere{border-color:rgba(245,197,24,.35)}
+  .ch--premiere::before{content:"PREMIERE";position:absolute;top:8px;right:8px;font-size:9px;letter-spacing:.1em;font-weight:800;background:linear-gradient(180deg,#ffd54a,#f5c518);color:#111;padding:4px 7px;border-radius:999px;box-shadow:0 6px 16px rgba(245,197,24,.35)}
   .ch__logo{width:100%;height:78px;object-fit:contain;background:rgba(255,255,255,0.92);border-radius:12px;padding:8px;border:1px solid rgba(255,255,255,.9)}
   .ch__logo--fallback{background:linear-gradient(135deg,#0b0e14,#1d2338);display:flex;align-items:center;justify-content:center;font-size:28px}
   .ch__name{font-size:14px;font-weight:700;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
@@ -93,12 +93,12 @@
 <div class="hero">
   <div class="hero__bg" role="img" aria-label="Banner cinema"></div>
   <div class="hero__content">
-    <div class="hero__kicker">✦ <b>PREMIER</b> • Cinema • Ao vivo • 279 canais testados</div>
+    <div class="hero__kicker">✦ <b>PREMIERE</b> • Cinema • Ao vivo • 279 canais testados</div>
     <h1>Seu <span>IPTV Cinema</span><br/>gratuito e legal</h1>
-    <p>Player em tela cheia com duplo clique. Use <b>PREMIER</b> para filmes do cinema, busque por nome ou categoria e assista na TV, no celular ou no navegador. Fonte: iptv-org (apenas FTA).</p>
+    <p>Player em tela cheia com duplo clique. Use <b>PREMIERE</b> para filmes do cinema, busque por nome ou categoria e assista na TV, no celular ou no navegador. Fonte: iptv-org (apenas FTA).</p>
     <div class="hero__actions">
       <div class="searchWrap"><i></i><input id="search" placeholder="Buscar canal, filme, série..." /></div>
-      <button class="btn btn--gold" id="btnPremierHero">⭐ PREMIER</button>
+      <button class="btn btn--gold" id="btnPremiereHero">⭐ PREMIERE</button>
       <button class="btn btn--ghost" id="btnBrOnlineHero">🇧🇷 279 ao vivo</button>
       <span id="count" class="countPill">0 canais</span>
     </div>
@@ -109,11 +109,12 @@
 
   <div class="chipRow" id="chips">
     <button class="chip active" data-cat="">Todos</button>
-    <button class="chip chip--premier" data-cat="PREMIER">⭐ PREMIER</button>
+    <button class="chip chip--premiere" data-cat="PREMIERE">⭐ PREMIERE</button>
     <button class="chip" data-cat="Movies">🎬 Filmes</button>
     <button class="chip" data-cat="Filmes">🍿 Cinema</button>
     <button class="chip" data-cat="Series">📺 Séries</button>
     <button class="chip" data-cat="Sports">⚽ Esportes</button>
+    <button class="chip" data-cat="Futebol">⚽ Futebol Grátis</button>
     <button class="chip" data-cat="Kids">👶 Kids</button>
     <button class="chip" data-cat="News">📰 Notícias</button>
     <button class="chip" id="btnOnline">✅ Testados</button>
@@ -151,6 +152,7 @@
           <button class="btn" id="btnLoad">📥 Brasil (398)</button>
           <button class="btn" id="btnBrOnline">🇧🇷 Só online (279)</button>
           <button class="btn" id="btnFilmes">🍿 Filmes</button>
+          <button class="btn" id="btnFutebol">⚽ Futebol Grátis</button>
           <button class="btn" id="btnTudo">🎞 Tudo (286)</button>
           <button class="btn" id="btnDemo">▶ Demo</button>
         </div>
@@ -203,10 +205,10 @@ function render(filter=''){
   countEl.textContent = `${filtered.length} canais`;
   subCountEl.textContent = catFilter ? `• ${catFilter}` : '';
   listEl.innerHTML = filtered.slice(0,600).map(c=>{
-    const isPremier = c.group.toLowerCase().includes('premier') || c.name.includes('🔥');
+    const isPremiere = c.group.toLowerCase().includes('premiere') || c.name.includes('🔥');
     const safeName = esc(c.name.replace('🔥','').trim());
     const logo = c.logo ? `<img class="ch__logo" src="${escAttr(c.logo)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=\\'ch__logo ch__logo--fallback\\'>🎬</div>'" />` : `<div class="ch__logo ch__logo--fallback">🎬</div>`;
-    return `<div class="ch ${isPremier?'ch--premier':''}" data-idx="${channels.indexOf(c)}" tabindex="0" role="button" aria-label="${safeName}">
+    return `<div class="ch ${isPremiere?'ch--premiere':''}" data-idx="${channels.indexOf(c)}" tabindex="0" role="button" aria-label="${safeName}">
       ${logo}
       <div class="ch__name">${safeName}</div>
       <div class="ch__sub"><span class="badge">${esc((c.group.split(';')[0]||'Geral').slice(0,18))}</span> <span>${esc(host(c.url))}</span></div>
@@ -308,8 +310,15 @@ $('#btnVlc').addEventListener('click', ()=>{
   const u=nowUrlEl.textContent; if(!u) return;
   statusEl.textContent='VLC > Mídia > Abrir fluxo de rede > cole o link';
 });
-document.querySelectorAll('.chip[data-cat]').forEach(b=>b.addEventListener('click',()=>{
-  catFilter=b.dataset.cat;
+document.querySelectorAll('.chip[data-cat]').forEach(b=>b.addEventListener('click',async()=>{
+  const cat=b.dataset.cat;
+  if(cat==='Futebol'){
+    try{ const t=await fetch('playlists/futebol.m3u').then(r=>r.text()); channels=parseM3U(t); catFilter=''; document.querySelectorAll('.chip[data-cat]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); render(); statusEl.textContent=`⚽ ${channels.length} Futebol Grátis (FIFA+, ge, ESPN)`; if(channels.length) play(0); return; }catch{}
+  }
+  if(cat==='PREMIERE'){
+    try{ const t=await fetch('playlists/premiere.m3u').then(r=>r.text()); if(t.includes('#EXTM3U')){ channels=parseM3U(t); catFilter=''; document.querySelectorAll('.chip[data-cat]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); render(); statusEl.textContent=`⭐ ${channels.length} PREMIERE`; if(channels.length) play(0); return; } }catch{}
+  }
+  catFilter=cat;
   document.querySelectorAll('.chip[data-cat]').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   render(searchEl.value);
@@ -319,14 +328,14 @@ $('#btnOnline').addEventListener('click', async()=>{
 });
 $('#btnBrOnline').addEventListener('click', ()=> $('#btnOnline').click());
 $('#btnBrOnlineHero').addEventListener('click', ()=> $('#btnOnline').click());
-$('#btnPremierHero').addEventListener('click', async()=>{
-  catFilter='PREMIER';
+$('#btnPremiereHero').addEventListener('click', async()=>{
+  catFilter='PREMIERE';
   document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-  document.querySelector('.chip[data-cat="PREMIER"]').classList.add('active');
-  // tenta carregar premier.m3u se ainda não estiver filtrando
+  document.querySelector('.chip[data-cat="PREMIERE"]').classList.add('active');
+  // tenta carregar PREMIERE.m3u se ainda não estiver filtrando
   try{
-    const t=await fetch('playlists/premier.m3u').then(r=>r.text());
-    if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`⭐ ${channels.length} canais PREMIER`; if(channels.length) play(0); return; }
+    const t=await fetch('playlists/premiere.m3u').then(r=>r.text());
+    if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`⭐ ${channels.length} canais PREMIERE`; if(channels.length) play(0); return; }
   }catch{}
   render(searchEl.value);
 });
