@@ -149,12 +149,21 @@
       <h2>📺 Canais <span class="hint" id="subCount"></span></h2>
       <div style="padding:14px">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn btn--gold" id="btnEco">🌿 Econômico (242)</button>
+          <button class="btn" id="btnUltra">🪶 Ultra leve (20)</button>
           <button class="btn" id="btnLoad">📥 Brasil (398)</button>
           <button class="btn" id="btnBrOnline">🇧🇷 Só online (279)</button>
           <button class="btn" id="btnFilmes">🍿 Filmes</button>
           <button class="btn" id="btnFutebol">⚽ Futebol Grátis</button>
           <button class="btn" id="btnTudo">🎞 Tudo (286)</button>
           <button class="btn" id="btnDemo">▶ Demo</button>
+        </div>
+        <div class="hint" style="margin:6px 0 8px;padding:8px 10px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.18);border-radius:10px">
+          🌿 <b>Economizar dados:</b> use <b>Econômico</b> (sem 1080p, -40% de gasto) ou <b>Ultra leve</b> (só 360/480p, -75%). Ideal pra 4G. No player, desative autoplay e use 480p.
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="chkEco" checked /> Modo economia (buffer baixo)</label>
+            <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="chkAutoNext" checked /> Pular se travar 7s</label>
+          </div>
         </div>
         <div id="list" class="grid"></div>
         <p class="hint" style="margin-top:12px">Dica: no app da TV (TiviMate/Kodi) use <code>.../playlists/br-online.m3u</code> para 100% sem CORS.</p>
@@ -223,27 +232,92 @@ function esc(s){return s.replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt
 function escAttr(s){return s.replace(/"/g,'&quot;')}
 function host(u){try{return new URL(u).hostname.replace('www.','')}catch{return ''}}
 
+let currentIdx = -1;
+let retryTimer = null;
+let startTs = 0;
+let ecoMode = true;
+let autoNext = true;
 function play(idx){
   const c = channels[idx];
   if(!c) return;
+  currentIdx = idx;
+  startTs = performance.now();
   nowEl.textContent = c.name.replace('🔥','').trim();
   nowUrlEl.textContent = c.url;
   statusEl.textContent = 'Carregando...';
   [...listEl.children].forEach(el=>el.classList.remove('active'));
   const active = listEl.querySelector(`[data-idx="${idx}"]`);
   if(active) active.classList.add('active');
+  if(active) active.scrollIntoView({block:'nearest'});
 
-  if(hls){ hls.destroy(); hls=null; }
+  if(retryTimer){ clearTimeout(retryTimer); retryTimer=null; }
+  if(hls){ try{hls.destroy();}catch{} hls=null; }
+  video.removeAttribute('src'); video.load();
+
+  // mixed-content warning
+  if(c.url.startsWith('http://') && location.protocol==='https:'){
+    statusEl.innerHTML = 'Aviso: canal http:// em site https:// — pode bloquear. <button class="btn" style="padding:4px 8px;font-size:11px" onclick="window.open(\''+c.url.replace(/'/g,'')+'\',\'_blank\')">abrir direto</button> ou use na TV (TiviMate/Kodi)';
+  }
+
+  // auto-skip se demorar >7s (desativável)
+  if(autoNext){
+    retryTimer = setTimeout(()=>{
+      if(statusEl.textContent.startsWith('Carregando')){
+        statusEl.textContent = 'Demorou 7s — pulando...';
+        const next = (idx+1) % channels.length;
+        setTimeout(()=>play(next), 800);
+      }
+    }, 7000);
+  }
+
   const isHls = c.url.includes('.m3u8') || c.url.includes('m3u8');
   if(Hls.isSupported() && isHls){
-    hls = new Hls({enableWorker:true});
+    hls = new Hls({
+      enableWorker:true,
+      lowLatencyMode:true,
+      backBufferLength: ecoMode ? 6 : 15,
+      maxBufferLength: ecoMode ? 6 : 12,
+      maxMaxBufferLength: ecoMode ? 10 : 20,
+      liveSyncDuration: ecoMode ? 1 : 2,
+      liveMaxLatencyDuration: ecoMode ? 4 : 6,
+      maxBufferHole:0.3,
+      capLevelToPlayerSize: ecoMode,
+      abrEwmaDefaultEstimate: ecoMode ? 600000 : 1000000
+    });
     hls.loadSource(c.url);
     hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, ()=> { video.play().catch(()=>{}); statusEl.textContent='Tocando (HLS)'; });
-    hls.on(Hls.Events.ERROR, (e,d)=> { console.warn(d); statusEl.textContent = 'Erro: '+(d.details||d.type); });
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=> {
+      clearTimeout(retryTimer);
+      const ms = Math.round(performance.now()-startTs);
+      video.play().catch(()=>{});
+      statusEl.textContent=`Tocando em ${ms}ms (HLS) — duplo clique para tela cheia`;
+    });
+    hls.on(Hls.Events.ERROR, (e,d)=> {
+      console.warn(d);
+      if(d.fatal){
+        clearTimeout(retryTimer);
+        if(d.type==='networkError'){
+          statusEl.textContent = 'Erro de rede — tentando próximo em 1s...';
+          retryTimer=setTimeout(()=>{ const n=(currentIdx+1)%channels.length; play(n); }, 1000);
+        } else {
+          statusEl.textContent = 'Erro: '+(d.details||d.type)+' — próximo em 1s';
+          retryTimer=setTimeout(()=>{ const n=(currentIdx+1)%channels.length; play(n); }, 1000);
+        }
+      } else {
+        statusEl.textContent = 'Aviso: '+(d.details||d.type);
+      }
+    });
   } else {
     video.src = c.url;
-    video.play().then(()=> statusEl.textContent='Tocando').catch(e=> statusEl.textContent='Erro: '+e.message);
+    const onPlay = ()=>{
+      clearTimeout(retryTimer);
+      const ms = Math.round(performance.now()-startTs);
+      statusEl.textContent=`Tocando em ${ms}ms`;
+      video.removeEventListener('playing', onPlay);
+    };
+    video.addEventListener('playing', onPlay, {once:true});
+    video.addEventListener('error', ()=>{ clearTimeout(retryTimer); statusEl.textContent='Erro ao carregar — próximo em 1s'; retryTimer=setTimeout(()=>play((currentIdx+1)%channels.length),1000); }, {once:true});
+    video.play().catch(e=>{ clearTimeout(retryTimer); statusEl.textContent='Erro: '+e.message; });
   }
 }
 
@@ -345,6 +419,14 @@ $('#btnFilmes').addEventListener('click', async()=>{
 $('#btnTudo').addEventListener('click', async()=>{
   try{ const t=await fetch('playlists/tudo.m3u').then(r=>r.text()); channels=parseM3U(t); catFilter=''; render(); statusEl.textContent=`🎞 ${channels.length} tudo`; if(channels.length) play(0);}catch{ statusEl.textContent='tudo.m3u não encontrado';}
 });
+$('#btnEco').addEventListener('click', async()=>{
+  try{ const t=await fetch('playlists/br-economico.m3u').then(r=>r.text()); channels=parseM3U(t); catFilter=''; render(); statusEl.textContent=`🌿 ${channels.length} econômico (sem 1080p, -40%)`; if(channels.length) play(0);}catch{ statusEl.textContent='br-economico.m3u não encontrado';}
+});
+$('#btnUltra').addEventListener('click', async()=>{
+  try{ const t=await fetch('playlists/br-ultra-leve.m3u').then(r=>r.text()); channels=parseM3U(t); catFilter=''; render(); statusEl.textContent=`🪶 ${channels.length} ultra leve (360/480p, -75%)`; if(channels.length) play(0);}catch{ statusEl.textContent='br-ultra-leve.m3u não encontrado';}
+});
+$('#chkEco')?.addEventListener('change', e=>{ ecoMode=e.target.checked; statusEl.textContent=ecoMode?'🌿 Economia ON (720p max)':'Economia OFF'; });
+$('#chkAutoNext')?.addEventListener('change', e=>{ autoNext=e.target.checked; });
 
 // PWA + TV remote — Service Worker removido para evitar cache velho
 if('serviceWorker' in navigator){
@@ -359,14 +441,17 @@ document.addEventListener('keydown', e=>{
   if(e.key==='ArrowUp' || e.key==='ArrowLeft'){ e.preventDefault(); (focusable[idx-1]||focusable[focusable.length-1])?.focus(); }
 });
 
-// inicial: tenta br-online > br.m3u > demo
+// inicial: tenta br-rapido > br-online > br.m3u > demo (rapido = ordenado por ping 18-50ms)
 channels=DEMO; render();
-fetch('playlists/br-online.m3u').then(r=>r.ok?r.text():Promise.reject()).then(t=>{
-  if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`🇧🇷 ${channels.length} canais testados (auto)`; }
+fetch('playlists/br-rapido.m3u').then(r=>r.ok?r.text():Promise.reject()).then(t=>{
+  if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`🇧🇷 ${channels.length} rápidos (18ms) — ordenado por velocidade`; }
+  else throw 1;
+}).catch(()=>fetch('playlists/br-online.m3u').then(r=>r.ok?r.text():Promise.reject()).then(t=>{
+  if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`🇧🇷 ${channels.length} testados (auto)`; }
   else throw 1;
 }).catch(()=>fetch('playlists/br.m3u').then(r=>r.text()).then(t=>{
   if(t.includes('#EXTM3U')){ channels=parseM3U(t); render(); statusEl.textContent=`${channels.length} canais (br.m3u)`; }
-}).catch(()=>{}));
+}).catch(()=>{})));
 </script>
 </body>
 </html>
